@@ -1,7 +1,9 @@
 from core.mayday import Mayday
-
+from core.logger import Logger
 
 def main():
+    Logger.setup()
+    
     mayday = Mayday()
     mayday.start()
 

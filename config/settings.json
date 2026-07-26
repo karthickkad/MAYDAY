@@ -1,0 +1,17 @@
+{
+    "assistant": {
+        "name": "MAYDAY",
+        "version": "0.1.0"
+    },
+
+    "application": {
+        "debug": false,
+        "log_level": "INFO",
+        "theme": "default"
+    },
+
+    "console": {
+        "show_banner": true,
+        "prompt": "You : "
+    }
+}
