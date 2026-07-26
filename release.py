@@ -1,139 +1,103 @@
+#!/usr/bin/env python3
 """
 release.py
-
-MAYDAY Release Manager
-
-Version Format:
-YYYY.MM.DD.REVISION
+Automates MAYDAY releases.
 """
 
-from datetime import datetime
-from pathlib import Path
 import json
-import shutil
-import sys
+import subprocess
+from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
-PROJECT_ROOT = Path(__file__).resolve().parent
-CONFIG_DIR = PROJECT_ROOT / "config"
-
-VERSION_FILE = CONFIG_DIR / "version.json"
-BACKUP_FILE = CONFIG_DIR / "version_backup.json"
+VERSION_FILE = Path("config/version.json")
 
 
-# --------------------------------------------------------
-# Utility Functions
-# --------------------------------------------------------
-
-def banner():
-    print("\n" + "=" * 60)
-    print("              MAYDAY RELEASE MANAGER")
-    print("=" * 60)
+def run(cmd):
+    print(f"> {' '.join(cmd)}")
+    subprocess.run(cmd, check=True)
 
 
-def load_version():
-    if not VERSION_FILE.exists():
-        return None
+# Load version.json
+with open(VERSION_FILE, "r", encoding="utf-8") as f:
+    data = json.load(f)
 
-    try:
-        with open(VERSION_FILE, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            return data.get("version")
-    except (json.JSONDecodeError, OSError):
-        return None
+# Current date & release time
+release_time = datetime.now(ZoneInfo("Asia/Kolkata"))
+today_str = release_time.strftime("%Y.%m.%d")
+release_time_str = release_time.strftime("%Y-%m-%d %H:%M:%S %Z")
 
+# Previous version
+version = data["version"]
+parts = version.split(".")
 
-def generate_version(old_version):
-    today = datetime.now().strftime("%Y.%m.%d")
+if len(parts) != 4:
+    raise ValueError("Version must be YYYY.MM.DD.BUILD")
 
-    if old_version:
-        try:
-            old_parts = old_version.split(".")
+old_date = ".".join(parts[:3])
+old_build = int(parts[3])
 
-            old_date = ".".join(old_parts[:3])
-            revision = int(old_parts[3])
+# Increment build or reset on new day
+if old_date == today_str:
+    build = old_build + 1
+else:
+    build = 1
 
-            if old_date == today:
-                return f"{today}.{revision + 1}"
+new_version = f"{today_str}.{build}"
 
-        except (IndexError, ValueError):
-            pass
+# Update version.json
+data["version"] = new_version
+data["release"] = data.get("release", "Layer 1 - Foundation")
+data["released_at"] = release_time_str
 
-    return f"{today}.1"
+with open(VERSION_FILE, "w", encoding="utf-8") as f:
+    json.dump(data, f, indent=4)
+    f.write("\n")
 
+print(f"\nUpdated version: {version} → {new_version}")
 
-def backup_version():
-    if VERSION_FILE.exists():
-        shutil.copy2(VERSION_FILE, BACKUP_FILE)
+tag = f"v{new_version}"
 
+# Get current Git branch
+branch = subprocess.check_output(
+    ["git", "branch", "--show-current"],
+    text=True
+).strip()
 
-def save_version(version):
-    CONFIG_DIR.mkdir(exist_ok=True)
+# Git commands
+run(["git", "add", str(VERSION_FILE)])
+run(["git", "commit", "-m", f"chore: bump version to {tag}"])
+run(["git", "tag", "-a", tag, "-m", f"MAYDAY {tag}"])
+run(["git", "push", "origin", branch])
+run(["git", "push", "origin", tag])
 
-    with open(VERSION_FILE, "w", encoding="utf-8") as file:
-        json.dump(
-            {
-                "version": version
-            },
-            file,
-            indent=4
-        )
+# Get current commit hash
+commit = subprocess.check_output(
+    ["git", "rev-parse", "--short", "HEAD"],
+    text=True
+).strip()
 
+# Release summary
+print("\n============================================================")
+print("                 MAYDAY RELEASE MANAGER")
+print("============================================================")
+print("✓ Version updated")
+print("✓ Version file saved")
+print("✓ Git commit created")
+print("✓ Git tag created")
+print("✓ Changes pushed")
+print("✓ Tag pushed")
 
-def show_summary(old_version, new_version):
-    print()
-    print(f"Current Version : {old_version}")
-    print(f"Next Version    : {new_version}")
-    print(f"Release Date    : {datetime.now():%Y-%m-%d}")
-    print(f"Release Time    : {datetime.now():%H:%M:%S}")
-    print()
+print("\n------------------------------------------------------------")
+print("Release Summary")
+print("------------------------------------------------------------")
+print(f"Version      : {new_version}")
+print(f"Release      : {data['release']}")
+print(f"Release Time : {release_time_str}")
+print(f"Branch       : {branch}")
+print(f"Commit       : {commit}")
+print(f"Git Tag      : {tag}")
 
-
-def confirm():
-    while True:
-        choice = input("Generate this release? (Y/N): ").strip().lower()
-
-        if choice in ("y", "yes"):
-            return True
-
-        if choice in ("n", "no"):
-            return False
-
-        print("Please enter Y or N.")
-
-
-# --------------------------------------------------------
-# Main
-# --------------------------------------------------------
-
-def main():
-    banner()
-
-    old_version = load_version()
-
-    if old_version is None:
-        print("No version found.")
-        old_version = "None"
-
-    new_version = generate_version(
-        None if old_version == "None" else old_version
-    )
-
-    show_summary(old_version, new_version)
-
-    if not confirm():
-        print("\nRelease cancelled.")
-        sys.exit(0)
-
-    backup_version()
-
-    save_version(new_version)
-
-    print("\nRelease completed successfully.")
-    print(f"New Version : {new_version}")
-
-    if BACKUP_FILE.exists():
-        print(f"Backup File : {BACKUP_FILE.name}")
-
-
-if __name__ == "__main__":
-    main()
+print("============================================================")
+print(" Release completed successfully!")
+print("============================================================")
