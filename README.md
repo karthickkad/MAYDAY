@@ -303,3 +303,18 @@ Please open an issue first if you plan to introduce major changes.
 MAYDAY aims to become a comprehensive open-source framework for AI, automation, and embedded systems development.
 
 The long-term goal is to provide a professional platform for firmware validation, communication protocol testing, hardware automation, automated reporting, and extensible plugin development while maintaining a clean, modular, and well-tested architecture.
+
+## 👨‍💻 Author
+
+**Karthick B**
+
+Embedded Systems • Firmware QA • Python Developer • Open-Source Enthusiast
+
+* GitHub: https://github.com/karthickkad
+* LinkedIn: https://www.linkedin.com/in/karthick-b-5294b0253
+
+---
+
+⭐ **If you find MAYDAY useful, consider giving it a star on GitHub!**
+
+Contributions, feature requests, and feedback are always welcome.
