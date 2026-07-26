@@ -304,7 +304,7 @@ MAYDAY aims to become a comprehensive open-source framework for AI, automation, 
 
 The long-term goal is to provide a professional platform for firmware validation, communication protocol testing, hardware automation, automated reporting, and extensible plugin development while maintaining a clean, modular, and well-tested architecture.
 
-## 👨‍💻 Author
+## Author
 
 **Karthick B**
 
