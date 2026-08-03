@@ -203,6 +203,7 @@ class RequestExecutor:
                 content=str(chunk),
                 provider=provider.name,
                 model=routing.model,
+                stream=True,
                 metadata={
                     "stream": True,
                 },
