@@ -3,7 +3,7 @@ base.py
 
 Abstract base class for all AI providers supported by MAYDAY.
 
-Every provider (OpenAI, Ollama, Gemini, Claude, etc.) must inherit from
+Every provider (OpenAI, Ollama, Gemini, Anthropic, etc.) must inherit from
 BaseProvider and implement every abstract method defined here.
 """
 
@@ -26,40 +26,43 @@ class BaseProvider(ABC):
     @abstractmethod
     def name(self) -> str:
         """
-        Provider name.
+        Return the provider name.
 
         Example:
             OpenAI
             Ollama
             Gemini
         """
-        pass
+        raise NotImplementedError
 
     @property
     @abstractmethod
     def version(self) -> str:
         """
-        Provider implementation version.
+        Return the provider implementation version.
         """
-        pass
+        raise NotImplementedError
 
     # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------
 
     @abstractmethod
-    def initialize(self) -> None:
+    def initialize(self) -> bool:
         """
         Initialize provider resources.
+
+        Returns:
+            True if initialization succeeds.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def shutdown(self) -> None:
         """
         Release provider resources.
         """
-        pass
+        raise NotImplementedError
 
     # ------------------------------------------------------------------
     # Chat Completion
@@ -70,24 +73,24 @@ class BaseProvider(ABC):
         self,
         prompt: str,
         model: str,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Any:
         """
         Generate a standard (non-streaming) response.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def stream(
         self,
         prompt: str,
         model: str,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Iterator[Any]:
         """
         Generate a streaming response.
         """
-        pass
+        raise NotImplementedError
 
     # ------------------------------------------------------------------
     # Model Management
@@ -98,21 +101,27 @@ class BaseProvider(ABC):
         """
         Return all supported models.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def default_model(self) -> str:
         """
         Return the default model.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def supports_model(self, model: str) -> bool:
         """
-        Check whether a model is supported.
+        Check whether the specified model is supported.
+
+        Args:
+            model: Model name.
+
+        Returns:
+            True if the model is supported.
         """
-        pass
+        raise NotImplementedError
 
     # ------------------------------------------------------------------
     # Health & Configuration
@@ -122,30 +131,44 @@ class BaseProvider(ABC):
     def health_check(self) -> bool:
         """
         Verify provider connectivity.
+
+        Returns:
+            True if the provider is healthy.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def validate_config(self) -> bool:
         """
         Validate provider configuration.
+
+        Returns:
+            True if the configuration is valid.
         """
-        pass
+        raise NotImplementedError
 
     # ------------------------------------------------------------------
-    # Provider Information
+    # Provider Metadata
     # ------------------------------------------------------------------
 
     @abstractmethod
     def provider_info(self) -> dict[str, Any]:
         """
         Return provider metadata.
-        """
-        pass
 
+        Example:
+        {
+            "name": "OpenAI",
+            "version": "1.0",
+            "supports_streaming": True
+        }
+        """
+        raise NotImplementedError
+
+    @property
     @abstractmethod
     def supports_streaming(self) -> bool:
         """
-        Return whether streaming is supported.
+        Return whether the provider supports streaming.
         """
-        pass
+        raise NotImplementedError
