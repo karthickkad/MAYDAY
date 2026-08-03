@@ -1,24 +1,71 @@
 # MAYDAY Testing
 
-## Provider Framework
+> Automated test history for the MAYDAY framework.
 
-| Module | Tests | Status |
-| ------ | ----- | ------ |
-| provider_info | 63 | PASS |
-| capabilities | 57 | PASS |
-| health | 54 | PASS |
+---
 
-## Execution
+## Latest Test Run
+
+Date:
+2026-08-03
+
+Branch:
+development
+
+Command
+
+```bash
+python -m pytest
+```
+
+Results
+
+| Metric | Value |
+| ------ | ----- |
+| Total Tests | 536 |
+| Passed | 536 |
+| Failed | 0 |
+| Skipped | 0 |
+| Errors | 0 |
+| Execution Time | 3.52 s |
+
+Status
+
+✅ PASS
+
+---
+
+## Module Summary
 
 | Module | Status |
-| ------ | ------ |
-| pipeline | PASS |
-| executor | PASS |
-| routing | PASS |
-| validator | PASS |
+| ------ | :----: |
+| Base Provider | ✅ |
+| Capabilities | ✅ |
+| Commands | ✅ |
+| Config | ✅ |
+| Provider Exceptions | ✅ |
+| Executor | ✅ |
+| Factory | ✅ |
+| Health | ✅ |
+| Logger | ✅ |
+| MAYDAY Core | ✅ |
+| Pipeline | ✅ |
+| Prompts | ✅ |
+| Provider Info | ✅ |
+| Provider Manager | ✅ |
+| Registry | ✅ |
+| Request | ✅ |
+| Response | ✅ |
+| Routing | ✅ |
+| Session | ✅ |
+| Utils | ✅ |
+| Validator | ✅ |
+| Version | ✅ |
 
-## Notes
+---
 
-- Tests are written using pytest.
-- New modules should include dedicated test files.
-- Every completed module should pass before merging.
+## Test History
+
+| Date | Branch | Tests | Passed | Failed | Status |
+| ---------- | ----------- | --: | --: | -: | :-----: |
+| 2026-08-03 | development | 536 | 536 | 0 | ✅ PASS |
